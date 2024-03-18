@@ -9,8 +9,8 @@ const Header = () => {
   });
 
   return (
-    <div className="text-[#34495e] flex justify-between w-[100%] bg-white p-2 rounded-md text-lg">
-        <div className="Right">
+    <div className="text-[#667079] flex justify-between w-[100%] bg-white p-2 rounded-md text-lg font-bold">
+        <div className="Right ">
             Question 
         </div>
 

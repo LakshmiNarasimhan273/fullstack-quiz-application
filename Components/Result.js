@@ -1,71 +1,80 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import API from "../API";
-
 import { useDispatch } from "react-redux";
 import { ShowResult } from "../Reducer/Actions";
 
-const Result = () => {
-  let Dispatch = useDispatch();
-  let [Res, setRes] = useState(null);
+const Result = ({ username }) => {
+  const dispatch = useDispatch();
+  const [result, setResult] = useState(null);
 
-  let Stats = useSelector((Stat) => {
-    return Stat.Reducer;
-  });
+  const stats = useSelector((state) => state.Reducer);
 
   useEffect(() => {
-    let UserArray = Stats.UserArray;
-    let Sum = 0;
-    API.map((Elem, Ind) => {
-      if (Elem.Answer == UserArray[Ind]) {
-        ++Sum;
+    const userArray = stats.UserArray;
+    let correctAnswers = 0;
+
+    API.forEach((question, index) => {
+      if (question.Answer === userArray[index]) {
+        correctAnswers++;
       }
     });
-    setRes(Sum);
-  }, []);
+
+    setResult(correctAnswers);
+  }, [stats.UserArray]);
+  
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
 
   return (
-    <>
-      <div className="flex flex-col sm:grid h-auto w-[90vw] sm:w-[50vw] sm:grid-cols-12 sm:grid-rows-2 sm:gap-2 relative">
-        <div className="Left sm:col-span-7 sm:row-span-2">
-          <div className="A bg-[#34495e] mb-2 p-3 space-x-5 justify-between All items-center ">
-            <p>Result {Math.floor((Res/API.length)*100)}%</p>
-            <div className="P-1 bg-black rounded-full h-[100px] w-[100px] flex justify-center items-center overflow-hidden">
-              <p style={{"background":`conic-gradient(#4bcffa 0 ${(Res/API.length)*100}%, transparent 0 0%)`}} className="w-[100%] h-[100%] flex items-center justify-center"></p>
-            </div>
-          </div>
-          <div className="B bg-[#1abc9c] p-3 flex All justify-between text-center">
-            <div className="B1">
-              <p>Total</p>
-              <p>{API.length}</p>
-            </div>
-            <div className="B1">
-              <p>Correct</p>
-              <p>{Res}</p>
-            </div>
-            <div className="B1">
-              <p>Wrong</p>
-              <p>{API.length - Res}</p>
-            </div>
-          </div>
-        </div>
+    <div className="flex flex-col items-center justify-center p-4">
+      <div className="mb-4">
+        <p className="text-3xl font-bold text-Black-500">{capitalizeFirstLetter(username)}</p>
+      </div>
 
-        <div className="Right sm:col-span-5 sm:row-span-2">
-          <div className="C bg-[#9b59b6] h-[30vh] sm:h-[100%] p-3 sm:w-max sm:max-h-[100%] All flex-col overflow-scroll w-[90vw] mt-2 sm:mt-0 absolute">
-            {API.map((Elem, Ind) => {
-              return (
-                <div>
-                  <p>Question # {Ind + 1}</p>
-                  <p className="text-[#ffdd59]">
-                    Ans: {Elem.Options[Elem.Answer]}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+      <div className="bg-gray-200 text-white p-6 space-x-5 flex justify-between items-center rounded-lg mb-6 w-full">
+        <p className="text-4xl">Result {Math.floor((result / API.length) * 100)}%</p>
+        <div className="bg-gold-400 rounded-full h-20 w-20 flex justify-center items-center overflow-hidden">
+          <p
+            style={{
+              background: `conic-gradient(#8B4513 0 ${(result / API.length) * 100}%, transparent 0 0%)`,
+            }}
+            className="w-full h-full flex items-center justify-center"
+          ></p>
         </div>
       </div>
-    </>
+
+      <div className="bg-gray-400 text-white p-6 flex justify-between text-center rounded-lg mb-6 w-full">
+        <div>
+          <p className="text-lg">Total</p>
+          <p className="text-4xl">{API.length}</p>
+        </div>
+        <div>
+          <p className="text-lg ">Correct</p>
+          <p className="text-4xl text-green-600">{result}</p>
+        </div>
+        <div>
+          <p className="text-lg">Wrong</p>
+          <p className="text-4xl  text-red-700">{API.length - result}</p>
+        </div>
+      </div>
+
+      <div className="bg-gray-500 text-white p-6 sm:max-h-[40vh] overflow-scroll w-full">
+        {API.map((Elem, Ind) => (
+          <div key={Ind} className="mb-6">
+            <p className="text-2xl font-semibold">Question # {Ind + 1}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
+              <div className="bg-gray-700 text-white p-4 rounded">
+                <p className="text-2xl">Ans: {Elem.Options[Elem.Answer]}</p>
+              </div>
+              {/* Add more options if needed */}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
